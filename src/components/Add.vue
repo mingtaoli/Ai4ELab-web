@@ -1,60 +1,66 @@
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import {
-    Check,
-    Delete,
-    Edit,
-    Message,
-    Search,
-    Star,
-  } from '@element-plus/icons-vue';
+import { ref } from 'vue';
+import {
+  Check,
+  Delete,
+  Edit,
+  Message,
+  Search,
+  Star,
+} from '@element-plus/icons-vue';
 import { controlledComputed } from '@vueuse/shared';
 import axios from 'axios';
-  
-  const answer = ref(0);
-  const remoteanswer = ref(1);
+
+const x = ref(3);
+const y = ref(6);
+
+const answer = ref(0);
+const remoteanswer = ref("string");
 function getAnswer() {
 
-    answer.value++
+  answer.value=x.value+y.value
 
 }
 
-function getAnswerremote() {
-  const res=  axios.get('/api/addxy', {
-    params: {
-            x: 2,
-            y: 3
-          }
-        });
+async function getAnswerremote() {
 
- //这块怎么写？搞不定了，julia端显示已经请求成功，这边无法搞出来
+  try {
+    const res = await axios.get('http://127.0.0.1:8000/api/addxy', {
+        //不考虑proxy和跨域的话，这个例子能够返回结果
+      params: {
+        x: x.value,
+        y: y.value
+      }
+    });
+    //const res = await axios.get('api/hello');
+    console.log(res);
+    
+    remoteanswer.value = res.data;
+  } catch (err) {
+    alert(err)
+  }
 }
 
 
 
-
-
-  </script>
+</script>
 <template>
-    <el-row class="mb-4">
-      <el-button @click="getAnswer">本地计算测试</el-button>
+  <el-row class="mb-4">
+    <el-input v-bind:value="x" placeholder="Please input x" />
+    <el-input v-bind:value="y" placeholder="Please input y" />
+    <!-- 怎么写个框框输入数字，还要查， -->
+    <el-button @click="getAnswer">本地计算测试</el-button>
 
-      <el-button type="primary">{{answer}}</el-button>
+    <el-button type="primary">{{answer}}</el-button>
 
-      <el-button @click="getAnswerremote">远程计算测试</el-button>
+    <el-button @click="getAnswerremote">远程计算测试</el-button>
 
-      <el-button type="primary">{{remoteanswer}}</el-button>
+    
 
-    </el-row>
-  
-    <el-row class="mb-4">
-      <el-button plain>Plain</el-button>
-      <el-button type="primary" plain>Primary</el-button>
-      <el-button type="success" plain>Success</el-button>
-      <el-button type="info" plain>Info</el-button>
-      <el-button type="warning" plain>Warning</el-button>
-      <el-button type="danger" plain>Danger</el-button>
-    </el-row>
- 
-  </template>
+    <el-button type="primary">{{remoteanswer}}</el-button>
+
+  </el-row>
+
+
+</template>
   
